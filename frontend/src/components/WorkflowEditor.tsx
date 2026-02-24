@@ -11,12 +11,16 @@ import '@xyflow/react/dist/style.css'
 import { useWorkflowStore } from '../store/workflowStore'
 import { nodeTypes } from './nodes'
 import Sidebar from './Sidebar'
+import NodeConfigPanel from './NodeConfigPanel'
 import DebugDrawer from './DebugDrawer'
+import { workflowApi } from '../api/workflow'
 
 export default function WorkflowEditor() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null)
   const [isDebugDrawerOpen, setIsDebugDrawerOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [currentWorkflowId, setCurrentWorkflowId] = useState<number | null>(null)
 
   const {
     nodes,
@@ -27,6 +31,7 @@ export default function WorkflowEditor() {
     addNode,
     workflowName,
     setWorkflowName,
+    setSelectedNodeId,
   } = useWorkflowStore()
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -55,20 +60,54 @@ export default function WorkflowEditor() {
     [reactFlowInstance, addNode]
   )
 
-  const handleSave = useCallback(() => {
-    const workflow = {
-      name: workflowName,
-      nodes,
-      edges,
+  const handleSave = useCallback(async () => {
+    if (isSaving) return
+
+    setIsSaving(true)
+    try {
+      const workflowData = {
+        name: workflowName,
+        nodes,
+        edges,
+      }
+
+      if (currentWorkflowId) {
+        // Update existing workflow
+        const response = await workflowApi.update(currentWorkflowId, workflowData)
+        if (response.success) {
+          console.log('Workflow updated:', response.data)
+        } else {
+          console.error('Failed to update workflow:', response.error)
+        }
+      } else {
+        // Create new workflow
+        const response = await workflowApi.create(workflowData)
+        if (response.success && response.data) {
+          setCurrentWorkflowId(response.data.id)
+          console.log('Workflow created:', response.data)
+        } else {
+          console.error('Failed to create workflow:', response.error)
+        }
+      }
+    } catch (error) {
+      console.error('Error saving workflow:', error)
+    } finally {
+      setIsSaving(false)
     }
-    console.log('Save workflow:', workflow)
-    // TODO: Call API to save workflow
-  }, [workflowName, nodes, edges])
+  }, [workflowName, nodes, edges, currentWorkflowId, isSaving])
+
+  // Handle node click to show config panel
+  const handleNodeClick = useCallback((_: React.MouseEvent, node: { id: string }) => {
+    setSelectedNodeId(node.id)
+  }, [setSelectedNodeId])
 
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
       <Sidebar />
+
+      {/* Node Config Panel */}
+      <NodeConfigPanel />
 
       {/* Main Canvas */}
       <div className="flex-1 flex flex-col">
@@ -90,9 +129,10 @@ export default function WorkflowEditor() {
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+              disabled={isSaving}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors disabled:bg-gray-400"
             >
-              保存
+              {isSaving ? '保存中...' : currentWorkflowId ? '更新' : '保存'}
             </button>
           </div>
         </div>
@@ -109,6 +149,7 @@ export default function WorkflowEditor() {
             onInit={setReactFlowInstance}
             onDragOver={onDragOver}
             onDrop={onDrop}
+            onNodeClick={handleNodeClick}
             fitView
             snapToGrid
             snapGrid={[16, 16]}
