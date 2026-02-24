@@ -20,24 +20,22 @@ export interface TTSConfig {
   volume?: number
 }
 
-// Base node data
-export interface BaseNodeData {
+// Workflow node data (flexible type for React Flow)
+export interface WorkflowNodeData {
+  type: NodeType
   label: string
+  placeholder?: string
+  config?: LLMConfig | TTSConfig
+  [key: string]: unknown
 }
 
-// Node data with specific configs
-export type NodeData =
-  | (BaseNodeData & { type: 'user-input'; placeholder?: string })
-  | (BaseNodeData & { type: 'llm'; config: LLMConfig })
-  | (BaseNodeData & { type: 'tts'; config: TTSConfig })
-  | (BaseNodeData & { type: 'end' })
-
-// Workflow node (extending React Flow node)
+// Workflow node
 export interface WorkflowNode {
   id: string
   type: NodeType
   position: { x: number; y: number }
-  data: NodeData
+  data: WorkflowNodeData
+  selected?: boolean
 }
 
 // Workflow edge

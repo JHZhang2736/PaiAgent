@@ -1,6 +1,14 @@
 import { memo } from 'react'
-import { Handle, Position, type NodeProps } from '@xyflow/react'
-import type { WorkflowNode } from '../../types/workflow'
+import { Handle, Position } from '@xyflow/react'
+import type { LLMConfig } from '../../types/workflow'
+
+interface NodeProps {
+  data: {
+    label: string
+    config?: LLMConfig
+  }
+  selected?: boolean
+}
 
 const providerLabels: Record<string, string> = {
   openai: 'OpenAI',
@@ -8,7 +16,7 @@ const providerLabels: Record<string, string> = {
   qwen: '通义千问',
 }
 
-const LLMNode = memo(({ data, selected }: NodeProps<WorkflowNode>) => {
+const LLMNode = memo(({ data, selected }: NodeProps) => {
   const config = data.config
   const provider = config?.provider || 'openai'
   const model = config?.model || ''

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useWorkflowStore, initializeWorkflow } from './workflowStore'
-import type { WorkflowNode, WorkflowEdge, NodeType, LLMConfig, TTSConfig } from '../types/workflow'
+import type { LLMConfig } from '../types/workflow'
 
 describe('WorkflowStore', () => {
   beforeEach(() => {
@@ -97,7 +97,7 @@ describe('WorkflowStore', () => {
 
       addNode('user-input', { x: 0, y: 0 })
       addNode('llm', { x: 200, y: 200 })
-      const { nodes, edges } = useWorkflowStore.getState()
+      const { nodes } = useWorkflowStore.getState()
 
       addEdge(nodes[0].id, nodes[1].id)
       removeNode(nodes[0].id)
@@ -177,7 +177,7 @@ describe('WorkflowStore', () => {
 
       addNode('user-input', { x: 0, y: 0 })
       addNode('llm', { x: 200, y: 200 })
-      const { nodes, edges } = useWorkflowStore.getState()
+      const { nodes } = useWorkflowStore.getState()
 
       addEdge(nodes[0].id, nodes[1].id)
       const edgeId = useWorkflowStore.getState().edges[0].id
@@ -207,7 +207,7 @@ describe('WorkflowStore', () => {
 
   describe('workflowName', () => {
     it('should set and get workflow name', () => {
-      const { setWorkflowName, workflowName } = useWorkflowStore.getState()
+      const { setWorkflowName } = useWorkflowStore.getState()
 
       setWorkflowName('我的工作流')
 

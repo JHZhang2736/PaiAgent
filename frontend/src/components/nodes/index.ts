@@ -13,4 +13,4 @@ export const nodeTypes = {
   llm: LLMNode,
   tts: TTSNode,
   end: EndNode,
-}
+} as const

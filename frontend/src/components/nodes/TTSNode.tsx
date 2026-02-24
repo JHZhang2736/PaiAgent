@@ -1,6 +1,14 @@
 import { memo } from 'react'
-import { Handle, Position, type NodeProps } from '@xyflow/react'
-import type { WorkflowNode } from '../../types/workflow'
+import { Handle, Position } from '@xyflow/react'
+import type { TTSConfig } from '../../types/workflow'
+
+interface NodeProps {
+  data: {
+    label: string
+    config?: TTSConfig
+  }
+  selected?: boolean
+}
 
 const voiceLabels: Record<string, string> = {
   xiaoyun: '小云',
@@ -9,7 +17,7 @@ const voiceLabels: Record<string, string> = {
   ruoxi: '若熙',
 }
 
-const TTSNode = memo(({ data, selected }: NodeProps<WorkflowNode>) => {
+const TTSNode = memo(({ data, selected }: NodeProps) => {
   const config = data.config
   const voice = config?.voice || 'xiaoyun'
 

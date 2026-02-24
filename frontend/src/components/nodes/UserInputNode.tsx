@@ -1,8 +1,14 @@
 import { memo } from 'react'
-import { Handle, Position, type NodeProps } from '@xyflow/react'
-import type { WorkflowNode } from '../../types/workflow'
+import { Handle, Position } from '@xyflow/react'
 
-const UserInputNode = memo(({ data, selected }: NodeProps<WorkflowNode>) => {
+interface NodeProps {
+  data: {
+    label: string
+  }
+  selected?: boolean
+}
+
+const UserInputNode = memo(({ data, selected }: NodeProps) => {
   return (
     <div
       className={`

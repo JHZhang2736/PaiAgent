@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { addEdge, applyNodeChanges, applyEdgeChanges, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react'
+import { applyNodeChanges, applyEdgeChanges, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react'
 import type { WorkflowNode, WorkflowEdge, NodeType, LLMConfig, TTSConfig } from '../types/workflow'
 
 interface WorkflowState {
@@ -33,9 +33,10 @@ const generateNodeId = (type: NodeType) => `${type}-${nodeIdCounter++}`
 const getDefaultNodeData = (type: NodeType): WorkflowNode['data'] => {
   switch (type) {
     case 'user-input':
-      return { label: '用户输入', placeholder: '请输入文本...' }
+      return { type: 'user-input', label: '用户输入', placeholder: '请输入文本...' }
     case 'llm':
       return {
+        type: 'llm',
         label: 'AI对话',
         config: {
           provider: 'openai',
@@ -46,6 +47,7 @@ const getDefaultNodeData = (type: NodeType): WorkflowNode['data'] => {
       }
     case 'tts':
       return {
+        type: 'tts',
         label: '语音合成',
         config: {
           voice: 'xiaoyun',
@@ -54,9 +56,9 @@ const getDefaultNodeData = (type: NodeType): WorkflowNode['data'] => {
         } as TTSConfig,
       }
     case 'end':
-      return { label: '结束' }
+      return { type: 'end', label: '结束' }
     default:
-      return { label: '节点' }
+      return { type: type as NodeType, label: '节点' }
   }
 }
 

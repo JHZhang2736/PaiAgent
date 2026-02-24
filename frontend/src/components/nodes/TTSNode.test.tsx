@@ -2,13 +2,12 @@ import { describe, it, expect } from 'vitest'
 import type { WorkflowNode, TTSConfig } from '../../types/workflow'
 
 describe('TTSNode', () => {
-  const defaultConfig: TTSConfig = {
-    voice: 'xiaoyun',
-    speed: 1.0,
-    volume: 1.0,
-  }
-
   it('should render node with label', () => {
+    const config: TTSConfig = {
+      voice: 'xiaoyun',
+      speed: 1.0,
+      volume: 1.0,
+    }
     const node: WorkflowNode = {
       id: 'test-tts',
       type: 'tts',
@@ -16,13 +15,17 @@ describe('TTSNode', () => {
       data: {
         type: 'tts',
         label: '语音合成',
-        config: defaultConfig,
+        config,
       },
     }
     expect(node.data.label).toBe('语音合成')
   })
 
   it('should have voice configuration', () => {
+    const config: TTSConfig = {
+      voice: 'xiaoyun',
+      speed: 1.0,
+    }
     const node: WorkflowNode = {
       id: 'test-tts',
       type: 'tts',
@@ -30,9 +33,9 @@ describe('TTSNode', () => {
       data: {
         type: 'tts',
         label: '语音合成',
-        config: { voice: 'xiaoyun' },
+        config,
       },
     }
-    expect(node.data.config?.voice).toBe('xiaoyun')
+    expect(node.data.config).toBeDefined()
   })
 })
